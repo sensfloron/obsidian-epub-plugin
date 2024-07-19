@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "obsidian-open-epub-plugin",
+	"name": "Open ePub",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "使Epub文件在Obsidian中拥有原生的阅读体验",
 	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "EonFloron",
+	"fundingUrl": "https://github.com/sensfloron/obsidian-open-epub-plugin",
 	"isDesktopOnly": false
 }
