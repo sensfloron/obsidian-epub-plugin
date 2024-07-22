@@ -8,22 +8,35 @@ import { OpenEpubPluginSettings, DEFAULT_SETTINGS, OpenEpubSettingTab } from './
 
 export default class OpenEpubPlugin extends Plugin {
 	settings: OpenEpubPluginSettings;
-	private epubView: EpubView;
-
+	currentLocationMap: Map<string, string>
+	// TODO: 暂时写死，后期改为配置面板配置，并且路径默认为.config目录的epubReadLocation.json
+	// private path_currentLocation = "currentLocation.json"
 	async onload() {
 		await this.loadSettings();
-
-		
+		// 读取当前位置Map对象
+		// this.app.vault.adapter.read(this.path_currentLocation).then((content) => {
+		// 	try {
+		// 		this.currentLocationMap = JSON.parse(content);
+		// 	}catch{
+		// 		this.currentLocationMap = new Map<string, string>();
+		// 	} 
+		// });
 		this.registerView(VIEW_TYPE_EPUB, (leaf: WorkspaceLeaf) => {
-			this.epubView = new EpubView(leaf, this.settings);
-			return this.epubView
+			return new EpubView(leaf, this.settings);
 		});
+
+		this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf: WorkspaceLeaf | null) => {
+			if (leaf && leaf.view instanceof EpubView) {
+				//TODO: 打开当前epub页面，获取主题颜色，如果页面颜色和主题颜色不一致就重新渲染，如果打开的页面为空则重新渲染
+				leaf.view.getThemeFontColor();
+			}
+		}));
 
 
 		// 监听主题变化
 		this.registerEvent(
 			this.app.workspace.on("css-change", () => {
-				EpubView.updateTextColors();
+				// TODO: 获取主题颜色，如果主题颜色和页面颜色不一致就重新渲染
 			})
 		);
 
@@ -45,6 +58,8 @@ export default class OpenEpubPlugin extends Plugin {
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
+
+
 
 
 	onunload() {
