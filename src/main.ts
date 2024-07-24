@@ -9,36 +9,26 @@ import { OpenEpubPluginSettings, DEFAULT_SETTINGS, OpenEpubSettingTab } from './
 export default class OpenEpubPlugin extends Plugin {
 	settings: OpenEpubPluginSettings;
 	currentLocationMap: Map<string, string>
-	// TODO: 暂时写死，后期改为配置面板配置，并且路径默认为.config目录的epubReadLocation.json
-	// private path_currentLocation = "currentLocation.json"
 	async onload() {
 		await this.loadSettings();
-		// 读取当前位置Map对象
-		// this.app.vault.adapter.read(this.path_currentLocation).then((content) => {
-		// 	try {
-		// 		this.currentLocationMap = JSON.parse(content);
-		// 	}catch{
-		// 		this.currentLocationMap = new Map<string, string>();
-		// 	} 
-		// });
+		
 		this.registerView(VIEW_TYPE_EPUB, (leaf: WorkspaceLeaf) => {
 			return new EpubView(leaf, this.settings);
 		});
 
-		this.registerEvent(this.app.workspace.on("active-leaf-change", (leaf: WorkspaceLeaf | null) => {
-			if (leaf && leaf.view instanceof EpubView) {
-				//TODO: 打开当前epub页面，获取主题颜色，如果页面颜色和主题颜色不一致就重新渲染，如果打开的页面为空则重新渲染
-				leaf.view.getThemeFontColor();
-			}
-		}));
 
-
-		// 监听主题变化
-		this.registerEvent(
-			this.app.workspace.on("css-change", () => {
-				// TODO: 获取主题颜色，如果主题颜色和页面颜色不一致就重新渲染
+		// 主题切换事件
+		this.registerEvent(this.app.workspace.on("css-change",()=>{
+			this.app.workspace.getLeavesOfType(VIEW_TYPE_EPUB).forEach(leaf => {
+				const view = leaf.view as EpubView;
+				const globalFontColor = view.getGlobalFontColor()
+				const fontColor = view.fontColor
+				if(fontColor !=globalFontColor){
+					// console.log("字体颜色不一致，重新渲染");
+					view.updateTheme(view.rendition, globalFontColor);
+				}
 			})
-		);
+		}));
 
 		try {
 			this.registerExtensions([EPUB_FILE_EXTENSION], VIEW_TYPE_EPUB);
@@ -52,11 +42,12 @@ export default class OpenEpubPlugin extends Plugin {
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
 		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
+			// TODO: 点击事件触发，
+			// console.log('click', evt);
 		});
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
 

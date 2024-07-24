@@ -7,12 +7,12 @@ If your plugin does not need CSS, delete this file.
 
 */
 body {
-	/* color: var(--text-normal); */
-	color: #dadada;
+	color: var(--text-normal);
+	/* color: #dadada; */
 }
 @media (prefers-color-scheme: dark) {
 	body {
-		/* color: var(--text-normal); */
-		color: #dadada;
+		color: var(--text-normal);
+		/* color: #dadada; */
 	}
 }
